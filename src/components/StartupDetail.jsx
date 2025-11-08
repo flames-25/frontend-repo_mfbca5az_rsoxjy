@@ -1,9 +1,10 @@
-import { X, Target, BarChart3, ShieldCheck, Clock } from "lucide-react";
+import { X, Target, BarChart3, ShieldCheck, Clock, AlertTriangle } from "lucide-react";
 
 export default function StartupDetail({ startup, onClose }) {
   if (!startup) return null;
 
-  const { problem, market, moat, whyNow } = startup.deep || {};
+  const { problem, market, moat, whyNow, negatives } = startup.deep || {};
+  const breakdown = startup._match?.breakdown;
 
   return (
     <div className="fixed inset-0 z-30 bg-black/40 flex items-end md:items-center justify-center p-0 md:p-6">
@@ -16,6 +17,27 @@ export default function StartupDetail({ startup, onClose }) {
           <button onClick={onClose} className="p-2 rounded-md hover:bg-slate-100 text-slate-600">
             <X size={18} />
           </button>
+        </div>
+        <div className="px-5 pt-4">
+          {startup._match && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-sm text-slate-700">
+                <span className="font-medium">Overall match</span>
+                <span className="font-semibold">{startup._match.total}%</span>
+              </div>
+              <div className="mt-2 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-full bg-indigo-600" style={{ width: `${startup._match.total}%` }} />
+              </div>
+              {breakdown && (
+                <div className="mt-2 grid grid-cols-4 gap-2 text-xs text-slate-600">
+                  <div>Traction {breakdown.traction}%</div>
+                  <div>Stage {breakdown.stage}%</div>
+                  <div>Budget {breakdown.budget}%</div>
+                  <div>Fit {breakdown.fit}%</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className="p-5 grid md:grid-cols-2 gap-4">
           <div className="space-y-4">
@@ -39,6 +61,18 @@ export default function StartupDetail({ startup, onClose }) {
             </section>
           </div>
         </div>
+        {negatives?.length ? (
+          <div className="px-5 pb-4">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <div className="flex items-center gap-2 text-amber-800 text-sm font-medium"><AlertTriangle size={16} /> Risks & negative signals</div>
+              <ul className="mt-2 list-disc list-inside text-amber-900 text-sm space-y-1">
+                {negatives.map((n, i) => (
+                  <li key={i}>{n}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : null}
         <div className="px-5 pb-5">
           <a href="#" className="inline-flex items-center justify-center w-full md:w-auto rounded-md bg-indigo-600 px-4 py-2 text-white text-sm font-medium shadow hover:bg-indigo-700">View Full Deck</a>
         </div>
